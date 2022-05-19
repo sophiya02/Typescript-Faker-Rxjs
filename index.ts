@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
-import { Observable } from 'rxjs';
-import { filter, map, switchMap } from 'rxjs/operators';
+import { Observable, from } from 'rxjs';
+import { filter, map, switchMap, mergeMap, concatMap } from 'rxjs/operators';
 import axios from 'axios';
 // Ques1
 // interface Car {
@@ -35,39 +35,37 @@ import axios from 'axios';
 // console.log('working on 2');
 
 // getRequest
-function getTodo() {
-  axios({
-    method: 'get',
-    url: 'https://jsonplaceholder.typicode.com/todos',
-  })
-    .then((res) => {
-      console.log(typeof res);
-      // return res;
-    })
-    .catch((err) => console.log(err));
-}
+const getData = from(
+  axios.get('https://random-data-api.com/api/cannabis/random_cannabis')
+);
+
 // console.log(getTodo());
 const observable = new Observable((subscriber) => {
   setInterval(() => {
-    subscriber.next(getTodo());
+    subscriber.next(1);
   }, 1000);
 });
-.pipe(
-  switchMap((value : AxiosResponse<any, any> ) => {
-  console.log(value);
-  return value;
-}
-);
+observable
+  .pipe(
+    // concatMap((v) => getData)
+    switchMap((v) =>
+      axios.get('https://random-data-api.com/api/cannabis/random_cannabis')
+    )
+  )
+  .subscribe((v) => console.log(v));
 
-const observer = {
-  next: (value) => {
-    console.log(value);
-  },
-  error: (err) => {
-    console.log(err);
-  },
-  complete: () => {
-    console.log('complete');
-  },
-};
-observable.subscribe(observer);
+// const observer = {
+//   next: (value) => {
+//     console.log(value);
+//   },
+//   error: (err) => {
+//     console.log(err);
+//   },
+//   complete: () => {
+//     console.log('complete');
+//   },
+// };
+// observable.subscribe(observer);
+//mergeMap
+//concatMap
+//switchMap
